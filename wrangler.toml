@@ -8,5 +8,10 @@ binding = "DB"
 database_name = "bookie-db"
 database_id = "e5a1fe57-f2b9-4ce5-90e3-49d1b38dc3d6"
 
-[env.production.vars]
-SITE_URL = "https://bookie.pages.dev"
+[env.production]
+vars = { SITE_URL = "https://bookie.pages.dev" }
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "bookie-db"
+database_id = "e5a1fe57-f2b9-4ce5-90e3-49d1b38dc3d6"
