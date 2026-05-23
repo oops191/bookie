@@ -1,0 +1,32 @@
+﻿---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import type { Post } from "../lib/db";
+
+const db = Astro.locals.runtime.env.DB;
+const { results } = await db.prepare("SELECT * FROM posts WHERE draft = 0 ORDER BY created_at DESC").all();
+const posts = results as unknown as Post[];
+---
+
+<BaseLayout>
+  <ul class="post-list">
+    {posts.length === 0 ? (
+      <p style="color: var(--color-text-muted);">暂无文章。</p>
+    ) : (
+      posts.map((post) => (
+        <li>
+          <a href={`/posts/${post.slug}`} class="post-card">
+            <h2 class="post-card-title">{post.title}</h2>
+            <time class="post-card-meta" datetime={post.created_at}>
+              {new Date(post.created_at).toLocaleDateString("zh-CN", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </time>
+            <p class="post-card-desc">{post.description}</p>
+          </a>
+        </li>
+      ))
+    )}
+  </ul>
+</BaseLayout>

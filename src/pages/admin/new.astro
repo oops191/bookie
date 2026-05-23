@@ -1,0 +1,17 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostEditor from "../../components/PostEditor.astro";
+
+const today = new Date().toISOString().slice(0, 10);
+---
+
+<BaseLayout>
+  <a href="/admin" class="back-link" style="margin-bottom:24px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+    返回仪表盘
+  </a>
+  <h1 style="font-size:1.5rem;margin-bottom:24px;">新建文章</h1>
+  <PostEditor isNew={true} initialDate={today} client:load />
+</BaseLayout>

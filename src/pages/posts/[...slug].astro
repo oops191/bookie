@@ -1,0 +1,39 @@
+﻿---
+import { marked } from "marked";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import type { Post } from "../../lib/db";
+
+const db = Astro.locals.runtime.env.DB;
+const result = await db.prepare("SELECT * FROM posts WHERE slug = ? AND draft = 0").bind(Astro.params.slug!).first();
+const post = result as unknown as Post | null;
+
+if (!post) {
+  return Astro.redirect("/404");
+}
+
+const htmlContent = marked.parse(post.content, { breaks: true }) as string;
+---
+
+<BaseLayout>
+  <a href="/" class="back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+    返回
+  </a>
+  <article>
+    <header class="post-header">
+      <h1 class="post-title">{post.title}</h1>
+      <time class="post-date" datetime={post.created_at}>
+        {new Date(post.created_at).toLocaleDateString("zh-CN", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}
+      </time>
+    </header>
+    <div class="post-body">
+      <Fragment set:html={htmlContent} />
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,109 @@
+﻿---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+  <style>
+    .login-box {
+      max-width: 360px;
+      margin: 80px auto 0;
+    }
+    .login-box h1 {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+    .login-box p {
+      color: var(--color-text-secondary);
+      margin-bottom: 24px;
+      font-size: 0.95rem;
+    }
+    .login-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 1rem;
+      font-family: inherit;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-surface);
+      color: var(--color-text);
+      outline: none;
+      transition: border-color var(--transition);
+      margin-bottom: 12px;
+    }
+    .login-input:focus {
+      border-color: var(--color-text-muted);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--color-text);
+      color: var(--color-bg);
+      cursor: pointer;
+      transition: opacity var(--transition);
+    }
+    .login-btn:hover {
+      opacity: 0.8;
+    }
+    .login-error {
+      color: #e00;
+      font-size: 0.9rem;
+      margin-top: 8px;
+      display: none;
+    }
+  </style>
+
+  <div class="login-box">
+    <h1>登录</h1>
+    <p>输入密码以访问管理后台</p>
+    <input type="password" id="password" class="login-input" placeholder="密码" autofocus />
+    <button id="login-btn" class="login-btn">登录</button>
+    <p id="error" class="login-error"></p>
+  </div>
+</BaseLayout>
+
+<script>
+  const passwordInput = document.getElementById("password") as HTMLInputElement;
+  const loginBtn = document.getElementById("login-btn")!;
+  const errorEl = document.getElementById("error")!;
+
+  async function login() {
+    const password = passwordInput.value;
+    if (!password) return;
+
+    errorEl.style.display = "none";
+    loginBtn.textContent = "登录中...";
+    (loginBtn as HTMLButtonElement).disabled = true;
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+
+      if (res.ok) {
+        window.location.href = "/admin";
+      } else {
+        const data = await res.json();
+        errorEl.textContent = data.error || "登录失败";
+        errorEl.style.display = "block";
+      }
+    } catch {
+      errorEl.textContent = "网络错误";
+      errorEl.style.display = "block";
+    }
+
+    loginBtn.textContent = "登录";
+    (loginBtn as HTMLButtonElement).disabled = false;
+  }
+
+  loginBtn.addEventListener("click", login);
+  passwordInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") login();
+  });
+</script>
