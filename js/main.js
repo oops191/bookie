@@ -10,6 +10,13 @@
         var text = token.text;
         var titleAttr = title ? ' title="' + title + '"' : "";
         return '<a href="' + href + '" target="_blank" rel="noopener"' + titleAttr + '>' + text + '</a>';
+      },
+      paragraph: function(token) {
+        var text = this.parser.parseInline(token.tokens);
+        if (text.startsWith("【") && text.includes("】")) {
+          return '<p class="post-lead">' + text + '</p>\n';
+        }
+        return '<p>' + text + '</p>\n';
       }
     }
   });
